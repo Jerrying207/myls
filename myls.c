@@ -234,10 +234,7 @@ static void free_files(File *files,size_t count)
 }
 
 //格式化输出文件信息
-static void print(const File *file,
-int owner_width,
-int group_width,
-int size_width)
+static void print(const File *file,int owner_width,int group_width,int size_width)
 {
     char permission[11];
     char owner[64];
@@ -288,7 +285,6 @@ int size_width)
     putchar('\n');
 
 }
-
 //遍历目录
 static void process_dir(const char *path)
 {
@@ -306,12 +302,12 @@ static void process_dir(const char *path)
     struct dirent *entry;
     while(1)
     {
-        errno = 0;
-        entry = readdir(dir);
+        errno=0;
+        entry=readdir(dir);
 
-        if(entry == NULL)
+        if(entry==NULL)
         {
-            if(errno != 0)
+            if(errno!=0)
             {
                 perror("readdir");
             }
@@ -322,6 +318,7 @@ static void process_dir(const char *path)
         {
             continue;
         }
+        
         char full_path[4096];
         snprintf(full_path,sizeof(full_path),"%s/%s",path,entry->d_name);
         struct stat st;
@@ -347,6 +344,7 @@ static void process_dir(const char *path)
             files=temp;
             capacity=new_capacity;
         }
+        
         files[count].name=strdup(entry->d_name);
         files[count].path=strdup(full_path);
 
@@ -376,11 +374,11 @@ static void process_dir(const char *path)
 
     if(choose.r_flag)
     {
-    for(size_t i = 0; i < count / 2; i++)
+    for(size_t i=0;i<count/2;i++)
         {
-            File temp = files[i];
-            files[i] = files[count - 1 - i];
-            files[count - 1 - i] = temp;
+            File temp=files[i];
+            files[i]=files[count-1-i];
+            files[count-1-i]=temp;
         }
     }
 
@@ -396,10 +394,9 @@ static void process_dir(const char *path)
         get_user_name(files[i].st.st_uid,owner,sizeof(owner));
         get_group_name(files[i].st.st_gid,group,sizeof(group));
 
-        snprintf(size_str,sizeof(size_str),"%lld",
-            (long long)files[i].st.st_size);
+        snprintf(size_str,sizeof(size_str),"%lld",(long long)files[i].st.st_size);
+        
         int len;
-
         len=strlen(owner);
         if(len>owner_width)
         {
@@ -425,9 +422,7 @@ static void process_dir(const char *path)
     {
         for(size_t i=0;i<count;i++)
         {
-            if(S_ISDIR(files[i].st.st_mode)&&
-               strcmp(files[i].name,".")!=0&&
-               strcmp(files[i].name,"..")!=0)
+            if(S_ISDIR(files[i].st.st_mode)&&strcmp(files[i].name,".")!=0&&strcmp(files[i].name,"..")!=0)
             {
                 printf("\n%s:\n",files[i].path);
                 process_dir(files[i].path);
